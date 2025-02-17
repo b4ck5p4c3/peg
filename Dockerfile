@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=skip=SecretsUsedInArgOrEnv;error=true
-FROM postgres:16-bookworm
+FROM docker.io/postgres:16-bookworm
 
 # Install Peg dependencies
 RUN <<-EOF
@@ -17,11 +17,11 @@ RUN <<-EOF
     # Determine WALG download URL and digest depending on architecture
     ARCH=$(uname -m)
     if [ "$ARCH" = "aarch64" ]; then
-        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.3/wal-g-pg-ubuntu20.04-aarch64"
-        WALG_SHA256="3aec9024959319468ac637ea4b2e215fe20511672669969077733ee5c3fd1466"
+        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.5/wal-g-pg-ubuntu-20.04-aarch64"
+        WALG_SHA256="c07a3ed87a4d321765078b3de5f7c7d5fea2e22a5e2d5c3a080bf3173af586e3"
     elif [ "$ARCH" = "x86_64" ]; then
-        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.3/wal-g-pg-ubuntu-20.04-amd64"
-        WALG_SHA256="0b46652f23fb4d09fa08f3d536b72806e597c4e20d0a09d960d6337bc2368e8b"
+        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.5/wal-g-pg-ubuntu-20.04-amd64"
+        WALG_SHA256="79d29dc97c7550500fd1f6dc3ca68343a8bf8197cf85d440595197b809a403b2"
     else
         echo "Unsupported architecture"
         exit 1
