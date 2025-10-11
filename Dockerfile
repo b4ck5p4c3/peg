@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=skip=SecretsUsedInArgOrEnv;error=true
-FROM docker.io/postgres:16-bookworm
+FROM docker.io/postgres:18-bookworm
 
 # Install Peg dependencies
 RUN <<-EOF
