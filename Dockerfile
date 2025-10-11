@@ -17,11 +17,11 @@ RUN <<-EOF
     # Determine WALG download URL and digest depending on architecture
     ARCH=$(uname -m)
     if [ "$ARCH" = "aarch64" ]; then
-        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.5/wal-g-pg-ubuntu-20.04-aarch64"
-        WALG_SHA256="c07a3ed87a4d321765078b3de5f7c7d5fea2e22a5e2d5c3a080bf3173af586e3"
+        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.7/wal-g-pg-ubuntu-20.04-aarch64"
+        WALG_SHA256="1a9230ad7af7d703f0ee95be22fc8ace82205533983a944b66e3cd9ccccc5536"
     elif [ "$ARCH" = "x86_64" ]; then
-        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.5/wal-g-pg-ubuntu-20.04-amd64"
-        WALG_SHA256="79d29dc97c7550500fd1f6dc3ca68343a8bf8197cf85d440595197b809a403b2"
+        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.7/wal-g-pg-ubuntu-20.04-amd64"
+        WALG_SHA256="0ed747c95d2ee3ab0ab9319e8dfa7b16af425eba6b022870130dbdc35aa346c1"
     else
         echo "Unsupported architecture"
         exit 1
