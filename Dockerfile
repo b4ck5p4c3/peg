@@ -42,12 +42,12 @@ ENV \
     # Prefer unix socket connection for wal-g 
     PGHOST=/var/run/postgresql \
     # Set Governance Object Lock for 10 years by default
-    S3_RETENTION_MODE="GOVERNANCE" \
+    S3_RETENTION_MODE=GOVERNANCE \
     S3_RETENTION_PERIOD=315569520 \
     # Set default compression method to zstd
-    WALG_COMPRESSION_METHOD="zstd" \
+    WALG_COMPRESSION_METHOD=zstd \
     # Use Yandex Cloud as default storage
-    AWS_ENDPOINT="https://storage.yandexcloud.net"
+    AWS_ENDPOINT=https://storage.yandexcloud.net
 
 # Enable pg_isready healthcheck
 HEALTHCHECK \
@@ -58,16 +58,13 @@ HEALTHCHECK \
     CMD [ "pg_isready" ]
 
 # Copy wal-g wrapper, ensuring it is executable
-COPY ./walg-wrapper.sh /usr/local/bin/walg-wrapper.sh
-RUN chmod +x /usr/local/bin/walg-wrapper.sh
+COPY --chmod=0755 ./peg.sh /usr/local/bin/peg
+
+# Copy includeable WAL-G PostgreSQL config
+COPY ./config/walg.conf /etc/postgresql/walg.conf
+
+# Copy initdb scripts that wire the WAL-G config and take an initial backup
+COPY --chmod=0755 ./initdb/90-walg-config.sh ./initdb/91-walg-initial-backup.sh /docker-entrypoint-initdb.d/
 
 # Drop privileges to postgres user
 USER postgres
-
-CMD [ \
-    "postgres", \
-    "-c", "archive_mode=on", \
-    "-c", "archive_timeout=1h", \
-    "-c", "archive_command=/usr/local/bin/walg-wrapper.sh wal-push %p", \
-    "-c", "restore_command=/usr/local/bin/walg-wrapper.sh wal-fetch %f %p" \
-    ]
