@@ -6,7 +6,7 @@ FROM docker.io/postgres:18-trixie
 RUN <<-EOF
     set -x
 
-    # Install curl, ca-certifcates, and B4CKSP4CE Root CA
+    # Install curl, ca-certificates, and B4CKSP4CE Root CA
     apt update
     apt install -y curl ca-certificates
     mkdir -p /usr/share/ca-certificates/bksp
@@ -50,7 +50,12 @@ ENV \
     AWS_ENDPOINT="https://storage.yandexcloud.net"
 
 # Enable pg_isready healthcheck
-HEALTHCHECK --interval=10s --start-period=10s --timeout=5s --retries=5 CMD [ "pg_isready" ]
+HEALTHCHECK \
+    --interval=10s \
+    --start-period=10s \
+    --timeout=5s \
+    --retries=5 \
+    CMD [ "pg_isready" ]
 
 # Copy wal-g wrapper, ensuring it is executable
 COPY ./walg-wrapper.sh /usr/local/bin/walg-wrapper.sh
@@ -59,5 +64,10 @@ RUN chmod +x /usr/local/bin/walg-wrapper.sh
 # Drop privileges to postgres user
 USER postgres
 
-# Append WAL configuration to default postgresql.conf
-ENV POSTGRES_INITDB_ARGS="-c archive_mode=always -c archive_timeout=1h -c archive_command='walg-wrapper.sh wal-push /var/lib/postgresql/data/%p' -c restore_command='walg-wrapper.sh wal-fetch %f /var/lib/postgresql/data/%p'"
+CMD [ \
+    "postgres", \
+    "-c", "archive_mode=on", \
+    "-c", "archive_timeout=1h", \
+    "-c", "archive_command=/usr/local/bin/walg-wrapper.sh wal-push %p", \
+    "-c", "restore_command=/usr/local/bin/walg-wrapper.sh wal-fetch %f %p" \
+    ]

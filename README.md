@@ -51,3 +51,18 @@ volumes:
   postgres:
 
 ```
+
+## FAQ
+
+### How to disable Object Lock?
+
+Object Lock is enabled by default in Peg to prevent both accidential and malicious deletion of backups.
+
+To disable Object Lock, set the `S3_RETENTION_PERIOD` environment variable to `-1`
+
+```yaml
+services:
+  db:
+    environment:
+      S3_RETENTION_PERIOD: -1
+```
