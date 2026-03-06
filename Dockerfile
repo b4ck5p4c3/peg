@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=skip=SecretsUsedInArgOrEnv;error=true
-FROM docker.io/postgres:18-bookworm
+FROM docker.io/postgres:18-trixie
 
 # Install Peg dependencies
 RUN <<-EOF
@@ -17,11 +17,11 @@ RUN <<-EOF
     # Determine WALG download URL and digest depending on architecture
     ARCH=$(uname -m)
     if [ "$ARCH" = "aarch64" ]; then
-        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.7/wal-g-pg-ubuntu-20.04-aarch64"
-        WALG_SHA256="1a9230ad7af7d703f0ee95be22fc8ace82205533983a944b66e3cd9ccccc5536"
+        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.8/wal-g-pg-22.04-aarch64"
+        WALG_SHA256="794d1a81f0c27825a1603bd39c0f2cf5dd8bed7cc36b598ca05d8d963c3d5fcf"
     elif [ "$ARCH" = "x86_64" ]; then
-        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.7/wal-g-pg-ubuntu-20.04-amd64"
-        WALG_SHA256="0ed747c95d2ee3ab0ab9319e8dfa7b16af425eba6b022870130dbdc35aa346c1"
+        WALG_URL="https://github.com/wal-g/wal-g/releases/download/v3.0.8/wal-g-pg-22.04-amd64"
+        WALG_SHA256="f30544c5ce93cf83b87578e3c4a2e9c0e0ffc3d160ef89ecddaf75f397d98deb"
     else
         echo "Unsupported architecture"
         exit 1
@@ -44,8 +44,6 @@ ENV \
     # Set Governance Object Lock for 10 years by default
     S3_RETENTION_MODE="GOVERNANCE" \
     S3_RETENTION_PERIOD=315569520 \
-    # Expect encryption key to be in Base64
-    WALG_LIBSODIUM_KEY_TRANSFORM="base64" \
     # Set default compression method to zstd
     WALG_COMPRESSION_METHOD="zstd" \
     # Use Yandex Cloud as default storage

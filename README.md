@@ -21,7 +21,7 @@ service:
       - db
 
   db:
-    image: ghcr.io/b4ck5p4c3/peg:16
+    image: ghcr.io/b4ck5p4c3/peg:18
     environment:
       # Default user and database to be created on a first run.
       POSTGRES_DB: "app"
@@ -32,9 +32,10 @@ service:
       # Generally, use your app name.
       BACKUP_PREFIX: "dev-awesome-app"
 
-      # This should be a 32-byte random value encoded in base64.
-      # Use `openssl rand -base64 32` to generate one.
-      WALG_LIBSODIUM_KEY: "..."
+      # Optional path to a PGP key.
+      # For encryption (push) this should be your public key.
+      # Private key only required for backup decryption (pull).
+      WALG_PGP_KEY_PATH: "/run/secrets/walg_pgp_key"
 
       # Credentials for a service account with storage.uploader role.
       AWS_ACCESS_KEY_ID: "..."
@@ -44,7 +45,7 @@ service:
       HEALTHCHECKS_UUID: "725ac523-9c1e-4709-9b7f-142e27aaba4b"
 
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql
 
 volumes:
   postgres:
