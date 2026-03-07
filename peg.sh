@@ -87,7 +87,7 @@ postgres_recovery() {
     touch "$PGDATA/recovery.signal"
 
     # Start Postgres in the background
-    pg_ctl -D "$PGDATA" -w start -o "$postgres_opts"
+    pg_ctl -D "$PGDATA" -w start -o "-c config_file=/etc/postgresql/postgresql.conf $postgres_opts"
 
     # Wait for Postgres to be ready
     until psql -c "select pg_is_in_recovery()" -tA | grep -q "f"; do

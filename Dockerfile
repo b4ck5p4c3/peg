@@ -61,10 +61,13 @@ HEALTHCHECK \
 COPY --chmod=0755 ./peg.sh /usr/local/bin/peg
 
 # Copy includeable WAL-G PostgreSQL config
-COPY ./config/walg.conf /etc/postgresql/walg.conf
+COPY ./config/postgresql.conf /etc/postgresql/postgresql.conf
 
-# Copy initdb scripts that wire the WAL-G config and take an initial backup
-COPY --chmod=0755 ./initdb/90-walg-config.sh ./initdb/91-walg-initial-backup.sh /docker-entrypoint-initdb.d/
+# Copy initdb script for the initial backup
+COPY --chmod=0755 ./initdb/99-walg-initial-backup.sh /docker-entrypoint-initdb.d/
 
 # Drop privileges to postgres user
 USER postgres
+
+# Run postgres
+CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]

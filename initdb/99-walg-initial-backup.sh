@@ -4,4 +4,8 @@
 
 set -euo pipefail
 
+# Give the database some time to start up before attempting the backup.
+sleep 5
+
+# Perform physical backup
 /usr/local/bin/peg backup
