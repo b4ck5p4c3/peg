@@ -1,6 +1,14 @@
 # syntax=docker/dockerfile:1
-# check=skip=SecretsUsedInArgOrEnv;error=true
-FROM docker.io/postgres:18-trixie
+FROM docker.io/postgres:18-trixie@sha256:69e8582b781cb44fa4557b98ed586fe68361e320d9b12f9707494335634f4f3d
+
+LABEL \
+    org.opencontainers.image.title="Peg" \
+    org.opencontainers.image.description="Elegant PostgreSQL container with built-in WAL-G backup" \
+    org.opencontainers.image.vendor="B4CKSP4CE" \
+    org.opencontainers.image.licenses="MPL-2.0" \
+    org.opencontainers.image.base.name="docker.io/postgres:18-trixie"
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Peg dependencies
 RUN <<-EOF
@@ -8,9 +16,9 @@ RUN <<-EOF
 
     # Install curl, ca-certificates, and B4CKSP4CE Root CA
     apt update
-    apt install -y curl ca-certificates
+    apt-get install -y --no-install-recommends curl ca-certificates
     mkdir -p /usr/share/ca-certificates/bksp
-    curl -fSsl https://ca.bksp.in/root/bksp-root.crt -o /usr/share/ca-certificates/bksp/B4CKSP4CE_Root_CA.crt
+    curl -fsSL https://ca.bksp.in/root/bksp-root.crt -o /usr/share/ca-certificates/bksp/B4CKSP4CE_Root_CA.crt
     echo "bksp/B4CKSP4CE_Root_CA.crt" | tee -a /etc/ca-certificates.conf
     update-ca-certificates
 
@@ -53,6 +61,7 @@ ENV \
 HEALTHCHECK \
     --interval=10s \
     --start-period=10s \
+    --start-interval=2s \
     --timeout=5s \
     --retries=5 \
     CMD [ "pg_isready" ]
