@@ -44,8 +44,8 @@ ENV \
     # Set Governance Object Lock for 10 years by default
     S3_RETENTION_MODE=GOVERNANCE \
     S3_RETENTION_PERIOD=315569520 \
-    # Set default compression method to zstd
-    WALG_COMPRESSION_METHOD=zstd \
+    # Set default compression method to LZMA (slowest, but best compression ratio)
+    WALG_COMPRESSION_METHOD=lzma \
     # Use Yandex Cloud as default storage
     AWS_ENDPOINT=https://storage.yandexcloud.net
 
