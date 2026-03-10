@@ -10,6 +10,36 @@ LABEL \
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Define B4CKSP4CE-specific environment variables
+ENV \
+    # Prefer unix socket connection for wal-g 
+    PGHOST=/var/run/postgresql \
+    # Set Governance Object Lock for 10 years by default
+    S3_RETENTION_MODE=GOVERNANCE \
+    S3_RETENTION_PERIOD=315569520 \
+    # Set default compression method to LZMA (slowest, but best compression ratio)
+    WALG_COMPRESSION_METHOD=lzma \
+    # Use Yandex Cloud as default storage
+    AWS_ENDPOINT=https://storage.yandexcloud.net
+
+# Enable pg_isready healthcheck
+HEALTHCHECK \
+    --interval=10s \
+    --start-period=10s \
+    --start-interval=2s \
+    --timeout=5s \
+    --retries=5 \
+    CMD [ "pg_isready" ]
+
+# Copy wal-g wrapper, ensuring it is executable
+COPY --chmod=0755 ./peg.sh /usr/local/bin/peg
+
+# Copy includeable WAL-G PostgreSQL config
+COPY ./config/postgresql.conf /etc/postgresql/postgresql.conf
+
+# Copy initdb script for the initial backup
+COPY --chmod=0755 ./initdb/99-walg-initial-backup.sh /docker-entrypoint-initdb.d/
+
 # Install Peg dependencies
 RUN <<-EOF
     set -x
@@ -44,36 +74,6 @@ RUN <<-EOF
     apt clean
     rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
 EOF
-
-# Define B4CKSP4CE-specific environment variables
-ENV \
-    # Prefer unix socket connection for wal-g 
-    PGHOST=/var/run/postgresql \
-    # Set Governance Object Lock for 10 years by default
-    S3_RETENTION_MODE=GOVERNANCE \
-    S3_RETENTION_PERIOD=315569520 \
-    # Set default compression method to LZMA (slowest, but best compression ratio)
-    WALG_COMPRESSION_METHOD=lzma \
-    # Use Yandex Cloud as default storage
-    AWS_ENDPOINT=https://storage.yandexcloud.net
-
-# Enable pg_isready healthcheck
-HEALTHCHECK \
-    --interval=10s \
-    --start-period=10s \
-    --start-interval=2s \
-    --timeout=5s \
-    --retries=5 \
-    CMD [ "pg_isready" ]
-
-# Copy wal-g wrapper, ensuring it is executable
-COPY --chmod=0755 ./peg.sh /usr/local/bin/peg
-
-# Copy includeable WAL-G PostgreSQL config
-COPY ./config/postgresql.conf /etc/postgresql/postgresql.conf
-
-# Copy initdb script for the initial backup
-COPY --chmod=0755 ./initdb/99-walg-initial-backup.sh /docker-entrypoint-initdb.d/
 
 # Drop privileges to postgres user
 USER postgres
