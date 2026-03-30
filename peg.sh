@@ -7,6 +7,7 @@ readonly HEALTHCHECKS_UUID="${HEALTHCHECKS_UUID:-}"
 readonly HEALTHCHECKS_BASE_URL="${HEALTHCHECKS_BASE_URL:-https://hc.bksp.in/ping}"
 readonly SENTRY_URL="${SENTRY_URL:-}"
 readonly WAL_DIR=${POSTGRES_INITDB_WALDIR:-$PGDATA}
+readonly PGUSER="${POSTGRES_USER:-postgres}"
 
 # Function for error handling
 error_exit() {
@@ -90,7 +91,7 @@ postgres_recovery() {
     pg_ctl -D "$PGDATA" -w start -o "-c config_file=/etc/postgresql/postgresql.conf $postgres_opts"
 
     # Wait for Postgres to be ready
-    until psql -c "select pg_is_in_recovery()" -tA | grep -q "f"; do
+    until psql -U "$PGUSER" -c "select pg_is_in_recovery()" -tA | grep -q "f"; do
         sleep 1
     done
 
