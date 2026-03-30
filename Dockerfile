@@ -73,6 +73,9 @@ RUN <<-EOF
     # Tidy up
     apt clean
     rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
+
+    # Create directory for config sideload
+    mkdir -p /etc/postgresql/postgresql.conf.d
 EOF
 
 # Drop privileges to postgres user
