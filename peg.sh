@@ -136,12 +136,22 @@ restore_pitr() {
     postgres_recovery "-c recovery_target_time='$target_timestamp' -c recovery_target_action=promote"
 }
 
-case "$1" in
+exec_healthcheck() {
+    if pg_isready -U "$PGUSER" > /dev/null 2>&1; then
+        exit 0
+    else
+        exit 1
+    fi
+}
+
+readonly ACTION="${1:-}"
+case "$ACTION" in
     wal-push)    archive_wal "$2" ;;
     wal-fetch)   fetch_wal "$2" "$3" ;;
     backup)   physical_backup ;;
     restore)   restore_physical_backup "${2:-}" ;;
     restore-pitr) restore_pitr "$2" ;;
+    healthcheck) exec_healthcheck ;;
 
-    *)        error_exit "Usage: $0 {wal-push|wal-fetch|backup|restore|restore-pitr} [args...]" ;;
+    *)        error_exit "Usage: $0 {wal-push|wal-fetch|backup|restore|restore-pitr|healthcheck} [args...]" ;;
 esac

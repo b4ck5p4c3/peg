@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/postgres:18-trixie@sha256:69e8582b781cb44fa4557b98ed586fe68361e320d9b12f9707494335634f4f3d
+FROM docker.io/postgres:18-trixie@sha256:a9abf4275f9e99bff8e6aed712b3b7dfec9cac1341bba01c1ffdfce9ff9fc34a
 
 LABEL \
     org.opencontainers.image.title="Peg" \
@@ -29,7 +29,7 @@ HEALTHCHECK \
     --start-interval=2s \
     --timeout=5s \
     --retries=5 \
-    CMD [ "pg_isready" ]
+    CMD [ "peg", "healthcheck" ]
 
 # Copy wal-g wrapper, ensuring it is executable
 COPY --chmod=0755 ./peg.sh /usr/local/bin/peg
